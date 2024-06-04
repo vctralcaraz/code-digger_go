@@ -9,9 +9,10 @@
         <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     </head>
     <body>
-        Count {{ .Count }}
-        <button hx-post="/count">Count</button>
+        {{ template "count" . }}
     </body>
 </html>
 
-{{ end}}
+{{ end}} {{ block "count" . }} Count {{ .Count }}
+<button hx-target="body" hx-post="/count">Count</button>
+{{ end }}

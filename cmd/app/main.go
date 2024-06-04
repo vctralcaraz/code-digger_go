@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	// add ftpcrawl.go from ../internal/ftpcrawl.go
 )
 
 type Templates struct {
@@ -31,6 +32,7 @@ func main() {
 	// fmt.Printf("This is a test of my go code. %s\n", text)
 
 	// ftpCrawl("92.204.128.116")
+	// crawler.FtpCrawl("92.204.128.116")
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -39,12 +41,12 @@ func main() {
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index.html", count)
+		return c.Render(200, "index", count)
 	})
 
 	e.POST("/count", func(c echo.Context) error {
 		count.Count++
-		return c.Render(200, "index.html", count)
+		return c.Render(200, "index", count)
 	})
 
 	e.Logger.Fatal(e.Start(":42069"))

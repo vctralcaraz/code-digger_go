@@ -23,45 +23,6 @@ func newTemplate() *Templates {
 	}
 }
 
-type Contact struct {
-	Name, Email string
-}
-
-func newContact(name, email string) Contact {
-	return Contact{
-		Name:  name,
-		Email: email,
-	}
-}
-
-type Contacts = []Contact
-
-type Data struct {
-	Contacts Contacts
-}
-
-func (d *Data) hasEmail(email string) bool {
-	for _, contact := range d.Contacts {
-		if contact.Email == email {
-			return true
-		}
-	}
-	return false
-}
-
-func newData() Data {
-	return Data{
-		Contacts: []Contact{
-			newContact("John", "jd@gmail.com"),
-			newContact("Clara", "cd@gmail.com"),
-		},
-	}
-}
-
-type Count struct {
-	Count int
-}
-
 type FormData struct {
 	Values, Errors map[string]string
 }
@@ -84,6 +45,7 @@ func newPage() Page {
 		Form: newFormData(),
 	}
 }
+
 func main() {
 	// var text string = "duh"
 	// fmt.Printf("This is a test of my go code. %s\n", text)
@@ -97,26 +59,12 @@ func main() {
 	page := newPage()
 	e.Renderer = newTemplate()
 
+	e.Static("/images", "images")
+	e.Static("/css", "css")
+
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", page)
-	})
 
-	e.POST("/contacts", func(c echo.Context) error {
-		name := c.FormValue("name")
-		email := c.FormValue("email")
-
-		if page.Data.hasEmail(email) {
-			formData := newFormData()
-			formData.Values["name"] = name
-			formData.Values["email"] = email
-			formData.Errors["email"] = "Email already exists"
-
-			return c.Render(400, "form", formData)
-		}
-
-		page.Data.Contacts = append(page.Data.Contacts, newContact(name, email))
-
-		return c.Render(200, "display", page)
+		return c.Render(200, "index.html", page)
 	})
 
 	e.Logger.Fatal(e.Start(":42069"))

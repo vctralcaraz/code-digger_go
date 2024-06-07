@@ -4,56 +4,23 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
+        <link rel="stylesheet" href="/css/main.css">
+        <title>Code Digger Go</title>
 
         <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     </head>
     <body>
-        {{ template "form" .Form }}
-        <hr />
-        {{ template "display" .Data }}
+        {{ template "form" . }}
     </body>
 </html>
 
-{{ end}} {{ block "form" . }}
-<form hx-swap="outerHTML" hx-post="/contacts">
-    name:
-    <input
-        {{
-        if
-        .Values.name
-        }}
-        value="{{ .Values.name }}"
-        {{
-        end
-        }}
-        type="text"
-        name="name"
-    />
-    email:
-    <input
-        {{
-        if
-        .Values.email
-        }}
-        value="{{ .Values.email }}"
-        {{
-        end
-        }}
-        type="text"
-        name="email"
-    />
+{{ end }} 
 
-    {{ if .Errors.email }}
-    <div style="color: red">{{ .Errors.email }}</div>
-    {{ end }}
-    <button type="submit">Add Contact</button>
+{{ block "form" . }}
+<form hx-post="/ftp">
+    host:       <input type="text" name="host" /> 
+    user:       <input type="text" name="user" /> 
+    password:   <input type="text" name="password" /> 
+    terms:      <input type="text" name="terms" />
 </form>
-
-{{ end }} {{ block "display" . }}
-<div id="contacts" style="display: flex; flex-direction: column">
-    {{ range .Contacts }}
-    <div>Name: <span>{{ .Name }}</span> Email: <span>{{ .Email }}</span></div>
-    {{ end }}
-</div>
 {{ end }}

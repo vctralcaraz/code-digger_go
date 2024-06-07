@@ -16,21 +16,21 @@ type file struct {
 	terms [][]byte // list of terms
 }
 
-func FtpCrawl(path string) {
+func FtpCrawl(host, user, password, path, terms string) {
 	var found = []file{}
-	c, err := ftp.Dial(path + ":21")
+	c, err := ftp.Dial(host + ":21")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer c.Quit()
 
-	// TODO: Add dynamic login through htmx
-	err = c.Login("drpollock", "s9X[DJ$kP+LZ0h97A7")
+	// err = c.Login("drpollock", "s9X[DJ$kP+LZ0h97A7")
+	err = c.Login(user, password)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	w := c.Walk("/public_html/wp-content/themes")
+	w := c.Walk(path)
 
 	for w.Next() {
 		if w.Err() != nil {
@@ -85,4 +85,5 @@ func FtpCrawl(path string) {
 	if err := c.Quit(); err != nil {
 		log.Fatal(err)
 	}
+	return found
 }

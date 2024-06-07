@@ -67,5 +67,14 @@ func main() {
 		return c.Render(200, "index.html", page)
 	})
 
+	e.POST("/ftp", func(c echo.Context) error {
+		host := c.FormValue("host")
+		user := c.FormValue("user")
+		password := c.FormValue("password")
+		path := c.FormValue("path")
+		terms := c.FormValue("terms")
+
+		return c.Render(200, "results", page)
+	})
 	e.Logger.Fatal(e.Start(":42069"))
 }

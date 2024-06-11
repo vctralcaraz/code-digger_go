@@ -17,44 +17,55 @@
                will be able to crawl any folder you specify. Please enter the FTP credentials below.</p>
             {{ template "form" . }}
             <hr />
-            {{ template "results" . }}
+            <div id="result-section">
+                {{ template "results" . }}
+            </div>
         </div>
     </body>
 </html>
 
-{{ end }} 
+{{ end }}
 
-{{ block "form" . }}
-<form hx-post="/ftp">
+{{ define "form" }}
+<form hx-post="/ftp" hx-target="#result-section">
     <label for="host">FPT Host</label>
-    <input type="text" name="host" />
+    <input type="text" name="host" value="92.204.139.241" />
 
     <label for="user">FTP User:</label>
-    <input type="text" name="user" /> 
+    <input type="text" name="user" value="sandboxvictorpss" />
 
     <label for="password"> FTP Password:</label>
-    <input type="password" name="password" /> 
+    <input type="password" name="password" value=";D=9?ycaUA{qZ_!.Q-" />
 
     <label for="path">Search Path:</label>
-    <input type="text" name="path" value="/public_html/wp-content/themes/" disabled />
+    <input type="text" name="path" value="/public_html/wp-content/themes/pss-theme" />
 
     <label for="terms">Terms:</label>
-    <input type="text" name="terms" />
+    <input type="text" name="terms" value="team" />
 
     <input type="submit" class="btn" value="Search!" />
 </form>
 {{ end }}
 
-{{ block "results" . }}
+{{ define "results" }}
 <div>
     <h2>Results:</h2>
+    {{ if .Results }}
     <div>
-        {{ range $key, $value :=. }}
-        <div id="results">
-            <h3>File: {{ $key }}</h3>
-            <p>{{ $value }}</p>
+        {{ range .Results }}
+        <div class="result">
+            <p>Path: {{ .Path }}</p>
+            <ul>
+                {{ range .Terms }}
+                <li>{{ . }}</li>
+                {{ end }}
+            </ul>
         </div>
         {{ end }}
     </div>
+    {{ else }}
+    <p>No results found.</p>
+    {{ end }}
 </div>
 {{ end }}
+

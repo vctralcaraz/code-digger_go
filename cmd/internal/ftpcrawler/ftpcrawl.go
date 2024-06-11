@@ -12,11 +12,23 @@ import (
 
 // file struct is used to store the file path and the terms to search for
 type file struct {
-	path  string   // path to the file
-	terms [][]byte // list of terms
+	Path  string   // path to the file
+	Terms [][]byte // list of terms
 }
 
-func FtpCrawl(host, user, password, path, terms string) {
+func buildRegexFromTerms(terms string) (*regexp.Regexp, error) {
+	// Split the terms by commas and trim spaces
+	splitTerms := strings.Split(terms, ",")
+	for i, term := range splitTerms {
+		splitTerms[i] = strings.TrimSpace(term)
+	}
+
+	// Join the terms into a regex pattern
+	pattern := "(?i)" + strings.Join(splitTerms, "|")
+	return regexp.Compile(pattern)
+}
+
+func FtpCrawl(host, user, password, path, terms string) []file {
 	var found = []file{}
 	c, err := ftp.Dial(host + ":21")
 	if err != nil {
@@ -24,7 +36,6 @@ func FtpCrawl(host, user, password, path, terms string) {
 	}
 	defer c.Quit()
 
-	// err = c.Login("drpollock", "s9X[DJ$kP+LZ0h97A7")
 	err = c.Login(user, password)
 	if err != nil {
 		log.Fatal(err)
@@ -58,11 +69,14 @@ func FtpCrawl(host, user, password, path, terms string) {
 					// regex to find terms in each file
 					// (?i) = case insensitive
 					// TODO: add dynamic terms into the regex
-					re := regexp.MustCompile("(?i)Ivan|sample|Team")
+					re, err := buildRegexFromTerms(terms)
+					if err != nil {
+						log.Fatal(err)
+					}
 					if re.FindAll(buf, -1) != nil {
 						found = append(found, file{
-							path:  w.Path() + "/" + entry.Name,
-							terms: re.FindAll(buf, -1),
+							Path:  w.Path() + "/" + entry.Name,
+							Terms: re.FindAll(buf, -1),
 						})
 					}
 
@@ -72,14 +86,6 @@ func FtpCrawl(host, user, password, path, terms string) {
 					}
 				}
 			}
-		}
-	}
-	fmt.Println("Results:")
-	fmt.Println("")
-	for _, v := range found {
-		fmt.Println(v.path)
-		for _, term := range v.terms {
-			fmt.Println(string(term))
 		}
 	}
 	if err := c.Quit(); err != nil {

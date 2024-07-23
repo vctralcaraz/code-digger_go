@@ -1,26 +1,12 @@
-.container {
-    width: 60%;
+.htmx-indicator {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.video {
     margin: 0 auto;
-    padding: 0;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-form > input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.btn {
-    border: none;
-    cursor: pointer;
-    color: #fff;
-    background-color: #3478c0;
+    width: 60%;
 }

@@ -54,6 +54,7 @@ func FtpCrawl(host, user, password, path, terms string) []file {
 			}
 
 			for _, entry := range entries {
+				// if strings.HasSuffix(entry.Name, ".php") {
 				if strings.HasSuffix(entry.Name, ".php") {
 					fmt.Println(w.Path() + "/" + entry.Name)
 					r, err := c.Retr(w.Path() + "/" + entry.Name)
@@ -68,7 +69,6 @@ func FtpCrawl(host, user, password, path, terms string) []file {
 
 					// regex to find terms in each file
 					// (?i) = case insensitive
-					// TODO: add dynamic terms into the regex
 					re, err := buildRegexFromTerms(terms)
 					if err != nil {
 						log.Fatal(err)

@@ -1,13 +1,13 @@
 package main
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	// "github.com/labstack/echo/v4/middleware"
 	// add ftpcrawl.go from ../internal/ftpcrawl.go
 	crawler "example.com/m/cmd/internal/ftpcrawler"
 )
@@ -46,18 +46,18 @@ type Results struct {
 	Results []file
 }
 
-type Page struct {
-	Data Results
-	Form FormData
-}
+// type Page struct {
+// 	Data Results
+// 	Form FormData
+// }
 
-func convertByteSlicesToStrings(byteSlices [][]byte) []string {
-	stringSlices := make([]string, len(byteSlices))
-	for i, byteSlice := range byteSlices {
-		stringSlices[i] = string(byteSlice)
-	}
-	return stringSlices
-}
+// func convertByteSlicesToStrings(byteSlices [][]byte) []string {
+// 	stringSlices := make([]string, len(byteSlices))
+// 	for i, byteSlice := range byteSlices {
+// 		stringSlices[i] = string(byteSlice)
+// 	}
+// 	return stringSlices
+// }
 
 func countAndFormatTerms(byteSlices [][]byte) []string {
 	termCount := make(map[string]int)
@@ -74,24 +74,37 @@ func countAndFormatTerms(byteSlices [][]byte) []string {
 	return formattedTerms
 }
 
-func main() {
-	// var text string = "duh"
-	// fmt.Printf("This is a test of my go code. %s\n", text)
+// Define the CustomField struct
+type CustomField struct {
+	ID    string `json:"id"`
+	Value string `json:"value"`
+}
 
-	// ftpCrawl("92.204.128.116")
-	// crawler.FtpCrawl("92.204.128.116")
-	// test info
-	// ip 92.204.139.241
-	// user sandboxvictorpss
-	// password ;D=9?ycaUA{qZ_!.Q-
+// Define the Page struct
+type Page struct {
+	ID           string        `json:"id"`
+	Title        string        `json:"title"`
+	CustomFields []CustomField `json:"customFields"`
+	DueDate      string        `json:"dueDate"`
+}
+
+// Create a function to parse the incoming JSON data and populate the Page struct
+func newPageFromData(data []byte) (*Page, error) {
+	var pageData Page
+	if err := json.Unmarshal(data, &pageData); err != nil {
+		return nil, err
+	}
+	return &pageData, nil
+}
+func main() {
 
 	e := echo.New()
-	e.Use(middleware.Logger())
+	// e.Use(middleware.Logger())
 
 	// page := newPage()
 	e.Renderer = newTemplate()
 
-	e.Static("/images", "images")
+	e.Static("/assets", "assets")
 	e.Static("/css", "css")
 
 	e.GET("/", func(c echo.Context) error {
@@ -108,11 +121,7 @@ func main() {
 
 		rawResults := crawler.FtpCrawl(host, user, password, path, terms)
 
-		// results := Results{
-		// 	Results: make([]file, len(rawResults)),
-		// }
-
-		fmt.Print("pre")
+		// fmt.Print("pre")
 		results := Results{
 			Results: make([]file, len(rawResults)),
 		}
@@ -126,9 +135,6 @@ func main() {
 		}
 
 		fmt.Println(results)
-		// results.terms = convertByteSlicesToStrings(results.terms)
-		// fmt.Print(results)
-		// page.Data = append(page.Data, results)
 		return c.Render(200, "results", results)
 	})
 	e.Logger.Fatal(e.Start(":42069"))
